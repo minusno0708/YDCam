@@ -9,6 +9,8 @@ from django.views import View
 from stream_app.detect.detect import detect
 from stream_app.record import record_capture
 
+from .models import Record
+
 # ストリーミング画像・映像を表示するview
 class IndexView(View):
     def get(self, request):
@@ -42,7 +44,7 @@ def generate_frame():
         byte_frame = jpeg.tobytes()
 
         if conf > 0.75:
-            record_capture(byte_frame)
+            record_capture(conf, byte_frame)
 
         # フレーム画像のバイナリデータをユーザーに送付する
         yield (b'--frame\r\n'
@@ -57,3 +59,8 @@ def set_time(frame):
     cv2.putText(frame, now, (0, 15), cv2.FONT_HERSHEY_PLAIN, 1, (0,0,0), 1, cv2.LINE_AA)
 
     return frame
+
+def record_view(request):
+    records = Record.objects.all()
+    context = {'records': records}
+    return render(request, 'stream_app/record.html', context)

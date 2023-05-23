@@ -1,0 +1,28 @@
+{% extends "stream_app/base.html" %}
+
+{% block extra_css %}
+{% endblock %}
+{% block page_title %}Top page{% endblock %}
+{% block page_head_title %}Top page{% endblock %}
+
+
+{% block content %}
+<table>
+    <tr>
+      <th>デバイス</th>
+      <th>画像</th>
+      <th>確信度</th>
+      <th>更新日時</th>
+    </tr>
+
+    {% for record in records %}
+    <tr>
+      <td>{{ record.device }}</td>
+      <td><img src="{{ record.image.url }}" alt="画像"></td>
+      <td>{{ record.conf }}</td>
+      <td>{{ record.updated_at }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+{% endblock %}
