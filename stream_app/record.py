@@ -3,6 +3,7 @@ import datetime
 from django.core.files.base import ContentFile
 from .models import Record
 
+# DBに画像を保存する処理
 def record_capture(conf, image):
     dt_now = datetime.datetime.now()
     now = dt_now.strftime("%Y-%m-%d _%H-%M-%S-%f")[:-4]

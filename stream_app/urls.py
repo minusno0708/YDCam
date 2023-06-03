@@ -6,7 +6,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('stream', views.IndexView.as_view()),
+    path('', views.IndexView.as_view()),
     path('video_feed', views.video_feed_view(), name="video_feed"),
     path('record', views.record_view, name="record"),
 ]

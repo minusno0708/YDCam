@@ -4,6 +4,7 @@ from django.db import models
 from django.db import models
 
 # Create your models here.
+# 画像を保存するデータモデル
 class Record(models.Model):
     device = models.IntegerField(default=0)
     image = models.ImageField(upload_to='image/')

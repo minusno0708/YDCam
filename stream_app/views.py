@@ -11,7 +11,7 @@ from stream_app.record import record_capture
 
 from .models import Record
 
-# ストリーミング画像・映像を表示するview
+# ストリーミング映像を表示するview
 class IndexView(View):
     def get(self, request):
         return render(request, 'stream_app/index.html', {})
@@ -36,13 +36,16 @@ def generate_frame():
             print("Failed to read frame.")
             break
 
+        # フレーム画像を物体検知し、存在確率と処理後の画像を取得
         conf, frame = detect(frame)
+        # 画像に時間を添付
         frame = set_time(frame)
 
         # フレーム画像バイナリに変換
         ret, jpeg = cv2.imencode('.jpg', frame)
         byte_frame = jpeg.tobytes()
 
+        # 人間を検知した場合DBに記録する
         if conf > 0.75:
             record_capture(conf, byte_frame)
 
@@ -53,6 +56,7 @@ def generate_frame():
         time.sleep(0.2)
     capture.release()
 
+# 画像に時刻を添付する処理
 def set_time(frame):
     dt_now = datetime.datetime.now()
     now = dt_now.strftime("%Y/%m/%d %H:%M:%S")
@@ -60,6 +64,7 @@ def set_time(frame):
 
     return frame
 
+# 保存した画像を表示するview
 def record_view(request):
     records = Record.objects.all()
     context = {'records': records}
