@@ -26,6 +26,15 @@ def video_feed_view():
 def generate_frame():
     capture = cv2.VideoCapture(0)  # USBカメラから
 
+    # 動画ファイル保存用の設定
+    fps = int(capture.get(cv2.CAP_PROP_FPS))                    # カメラのFPSを取得
+    w = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))              # カメラの横幅を取得
+    h = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))             # カメラの縦幅を取得
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')        # 動画保存時のfourcc設定（mp4用）
+
+    recording = False
+    rec_starttime = 0
+
     while True:
         if not capture.isOpened():
             print("Capture is not opened.")
@@ -47,13 +56,24 @@ def generate_frame():
 
         # 人間を検知した場合DBに記録する
         if conf > 0.75:
-            record_capture(conf, byte_frame)
+            if not recording:
+                recording = True
+                dt_now = datetime.datetime.now()
+                filename = dt_now.strftime("%Y-%m-%d _%H-%M-%S-%f")[:-4]
+                video = cv2.VideoWriter(f'record/{filename}.mp4', fourcc, fps, (w, h))  # 動画の仕様（ファイル名、fourcc, FPS, サイズ）
+                rec_starttime = time.time()
+        elif time.time()-rec_starttime > 30:
+            if recording:
+                recording = False
+                video.release()
+
+        if recording:
+            video.write(frame)
 
         # フレーム画像のバイナリデータをユーザーに送付する
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + byte_frame + b'\r\n\r\n')
-        
-        time.sleep(0.2)
+ 
     capture.release()
 
 # 画像に時刻を添付する処理

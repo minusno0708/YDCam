@@ -16,9 +16,9 @@ pos_x = 240
 def detect(imgs):
     #--- 推定の検出結果を取得 ---
     results = model(imgs, size=160) #--- 160ピクセルの画像にして処理
+    conf_result = 0
 
     #--- 検出結果を画像に描画して表示 ---
-    conf_result = 0
     for *box, conf, cls in results.xyxy[0]:  # xyxy, confidence, class
 
         #--- クラス名と信頼度を文字列変数に代入
